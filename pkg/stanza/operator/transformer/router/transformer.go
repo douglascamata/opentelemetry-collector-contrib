@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/entry"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/attrs"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 )
@@ -56,7 +57,12 @@ func (t *Transformer) Process(ctx context.Context, entry *entry.Entry) error {
 			for _, output := range route.OutputOperators {
 				err = output.Process(ctx, entry)
 				if err != nil {
-					t.Logger().Error("Failed to process entry", zap.Error(err))
+					errFields := []zap.Field{
+						zap.Error(err),
+						zap.Any(attrs.LogFilePath, entry.Attributes[attrs.LogFilePath]),
+						zap.Any(attrs.LogFileOffset, entry.Attributes[attrs.LogFileOffset]),
+					}
+					t.Logger().Error("Failed to process entry", errFields...)
 				}
 			}
 			break
