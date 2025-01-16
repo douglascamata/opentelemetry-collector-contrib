@@ -197,7 +197,7 @@ func (r *Reader) readContents(ctx context.Context) {
 			return
 		}
 
-		token, err := r.decoder.Decode(s.Bytes())
+		tokenBytes, err := r.decoder.Decode(s.Bytes())
 		if err != nil {
 			r.set.Logger.Error("failed to decode token", zap.Error(err))
 			r.Offset = s.Pos() // move past the bad token or we may be stuck
@@ -209,7 +209,9 @@ func (r *Reader) readContents(ctx context.Context) {
 			r.FileAttributes[attrs.LogFileRecordNumber] = r.RecordNum
 		}
 
-		err = r.emitFunc(ctx, emit.NewToken(token, r.FileAttributes))
+		token := emit.NewToken(tokenBytes, r.FileAttributes)
+		token.Attributes[attrs.LogFileOffset] = s.Pos()
+		err = r.emitFunc(ctx, token)
 		if err != nil {
 			r.set.Logger.Error("failed to process token", zap.Error(err))
 		}

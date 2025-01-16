@@ -13,6 +13,7 @@ import (
 const (
 	LogFileName           = "log.file.name"
 	LogFilePath           = "log.file.path"
+	LogFileOffset         = "log.file.offset"
 	LogFileNameResolved   = "log.file.name_resolved"
 	LogFilePathResolved   = "log.file.path_resolved"
 	LogFileOwnerName      = "log.file.owner.name"
