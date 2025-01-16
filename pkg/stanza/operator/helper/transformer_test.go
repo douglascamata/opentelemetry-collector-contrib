@@ -17,6 +17,7 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/entry"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/attrs"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/testutil"
 )
@@ -91,6 +92,8 @@ func TestTransformerDropOnError(t *testing.T) {
 	}
 	ctx := context.Background()
 	testEntry := entry.New()
+	testEntry.AddAttribute(attrs.LogFilePath, "test.log")
+	testEntry.AddAttribute(attrs.LogFileOffset, "5")
 	transform := func(_ *entry.Entry) error {
 		return fmt.Errorf("Failure")
 	}
@@ -106,6 +109,8 @@ func TestTransformerDropOnError(t *testing.T) {
 			Context: []zapcore.Field{
 				{Key: "error", Type: 26, Interface: fmt.Errorf("Failure")},
 				zap.Any("action", "drop"),
+				zap.Any(attrs.LogFilePath, testEntry.Attributes[attrs.LogFilePath]),
+				zap.Any(attrs.LogFileOffset, testEntry.Attributes[attrs.LogFileOffset]),
 			},
 		},
 	}
@@ -136,6 +141,8 @@ func TestTransformerDropOnErrorQuiet(t *testing.T) {
 	}
 	ctx := context.Background()
 	testEntry := entry.New()
+	testEntry.AddAttribute(attrs.LogFilePath, "test.log")
+	testEntry.AddAttribute(attrs.LogFileOffset, "5")
 	transform := func(_ *entry.Entry) error {
 		return fmt.Errorf("Failure")
 	}
@@ -151,6 +158,8 @@ func TestTransformerDropOnErrorQuiet(t *testing.T) {
 			Context: []zapcore.Field{
 				{Key: "error", Type: 26, Interface: fmt.Errorf("Failure")},
 				zap.Any("action", "drop_quiet"),
+				zap.Any(attrs.LogFilePath, testEntry.Attributes[attrs.LogFilePath]),
+				zap.Any(attrs.LogFileOffset, testEntry.Attributes[attrs.LogFileOffset]),
 			},
 		},
 	}
@@ -181,6 +190,8 @@ func TestTransformerSendOnError(t *testing.T) {
 	}
 	ctx := context.Background()
 	testEntry := entry.New()
+	testEntry.AddAttribute(attrs.LogFilePath, "test.log")
+	testEntry.AddAttribute(attrs.LogFileOffset, "5")
 	transform := func(_ *entry.Entry) error {
 		return fmt.Errorf("Failure")
 	}
@@ -196,6 +207,8 @@ func TestTransformerSendOnError(t *testing.T) {
 			Context: []zapcore.Field{
 				{Key: "error", Type: 26, Interface: fmt.Errorf("Failure")},
 				zap.Any("action", "send"),
+				zap.Any(attrs.LogFilePath, testEntry.Attributes[attrs.LogFilePath]),
+				zap.Any(attrs.LogFileOffset, testEntry.Attributes[attrs.LogFileOffset]),
 			},
 		},
 	}
@@ -226,6 +239,8 @@ func TestTransformerSendOnErrorQuiet(t *testing.T) {
 	}
 	ctx := context.Background()
 	testEntry := entry.New()
+	testEntry.AddAttribute(attrs.LogFilePath, "test.log")
+	testEntry.AddAttribute(attrs.LogFileOffset, "5")
 	transform := func(_ *entry.Entry) error {
 		return fmt.Errorf("Failure")
 	}
@@ -241,6 +256,8 @@ func TestTransformerSendOnErrorQuiet(t *testing.T) {
 			Context: []zapcore.Field{
 				{Key: "error", Type: 26, Interface: fmt.Errorf("Failure")},
 				zap.Any("action", "send_quiet"),
+				zap.Any(attrs.LogFilePath, testEntry.Attributes[attrs.LogFilePath]),
+				zap.Any(attrs.LogFileOffset, testEntry.Attributes[attrs.LogFileOffset]),
 			},
 		},
 	}
