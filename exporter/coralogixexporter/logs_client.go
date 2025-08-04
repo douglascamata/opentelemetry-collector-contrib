@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"runtime"
 
+	"github.com/davecgh/go-spew/spew"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/configgrpc"
 	"go.opentelemetry.io/collector/config/configopaque"
@@ -87,6 +88,7 @@ func (e *logsExporter) pushLogs(ctx context.Context, ld plog.Logs) error {
 		resourceLog.Resource().Attributes().PutStr(cxAppNameAttrName, appName)
 		resourceLog.Resource().Attributes().PutStr(cxSubsystemNameAttrName, subsystem)
 	}
+	spew.Dump(rss)
 
 	resp, err := e.logExporter.Export(e.enhanceContext(ctx), plogotlp.NewExportRequestFromLogs(ld), e.callOptions...)
 	if err != nil {
